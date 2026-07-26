@@ -2,12 +2,13 @@ import os
 import random
 import numpy as np
 from PIL import Image
+import config
 
 def get_distance(p1, p2):
     # Calculates standard Euclidean distance between two center points
     return ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
 
-def generate_seamless_pattern(input_folder="flower_edited", output_path="final_pattern_tile.png", sub_tile_size=1200, total_objs=80):
+def generate_seamless_pattern(input_folder=config.edited_photos, output_path=config.generated_pattern_path, sub_tile_size=1200, total_objs=80):
     # Assembles a completely random fabric pattern panel across a massive master canvas.
     # Uses toroidal boundary calculations to maintain a perfect spacing buffer without mirror lines.
     
@@ -27,7 +28,7 @@ def generate_seamless_pattern(input_folder="flower_edited", output_path="final_p
     # ADJUST THIS VALUE TO CONTROL THE WHITE SPACE GAP
     # This is the minimum separation distance (in pixels) required between flower edges.
     # Increase this (e.g., 40) for wider gaps. Decrease it (e.g., 10) to pack them tight.
-    edge_separation_buffer = 5 
+    edge_separation_buffer = config.white_space_gap
 
     print(f"[pattern_gen] Distributing {total_objs} assets randomly across a {master_size}x{master_size} canvas...")
 
@@ -36,7 +37,7 @@ def generate_seamless_pattern(input_folder="flower_edited", output_path="final_p
         source_flower = Image.open(chosen_flower_path).convert("RGBA")
         
         # 1. Choose continuous random scale size
-        scale = random.uniform(0.65, 0.95)
+        scale = random.uniform(config.image_scale_min, config.image_scale_max)
         w = int(source_flower.width * scale)
         h = int(source_flower.height * scale)
         if w < 15 or h < 15: continue

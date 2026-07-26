@@ -4,8 +4,9 @@ import cv2
 import numpy as np
 from PIL import Image
 from rembg import remove
+import config
 
-def process_raw_folder(input_folder="flowers_raw", output_folder="flower_edited", bridge_gap=15):
+def process_raw_folder(input_folder=config.raw_photos, output_folder=config.edited_photos, bridge_gap=15):
     # Loops through the raw folder, extracts individual flower objects, 
     # discards elements cut off by the borders, and preserves original file names.
     

@@ -2,8 +2,9 @@ import os
 import image_pull
 import pattern_gen
 from PIL import Image
+import config
 
-def get_next_file_name(base_name="final_pattern_tile", extension=".png"):
+def get_next_file_name(base_name=config.generated_pattern, extension=".png"):
     # Finds the next available filename by checking existing files
     # If 'final_pattern_tile1.png' exists, it moves to 'final_pattern_tile2.png', etc
 
@@ -12,7 +13,7 @@ def get_next_file_name(base_name="final_pattern_tile", extension=".png"):
         counter += 1
     return f"{base_name}{counter}{extension}"
 
-def get_most_recent_folder(base_name="flower_edited"):
+def get_most_recent_folder(base_name=config.edited_photos):
     # Scans the current directory to locate the folder with the highest index number.
     # e.g., if 'flower_edited1', 'flower_edited2', and 'flower_edited3' exist, it returns 'flower_edited3'
 
@@ -37,20 +38,20 @@ def run_fabric_pipeline():
     if user_choice == "1":
         # Step 1: Standard full pipeline extraction
         generated_folder = image_pull.process_raw_folder(
-            input_folder="flowers_raw", 
-            output_folder="flower_edited", 
+            input_folder=config.raw_photos, 
+            output_folder=config.edited_photos, 
             bridge_gap=15 
         )
     elif user_choice == "2":
         # Step 1 Bypassed: Dynamically fetch your last used edited folder
-        generated_folder = get_most_recent_folder("flower_edited")
+        generated_folder = get_most_recent_folder(config.edited_photos)
         if generated_folder:
             print(f"\n[main] Skipping extraction. Bypassing directly to folder: '{generated_folder}/'")
         else:
             # Fallback check if you haven't ever run an automated extraction yet
             print("\nNo auto-generated folder found! Checking for standard 'flower_edited' directory...")
-            if os.path.exists("flower_edited"):
-                generated_folder = "flower_edited"
+            if os.path.exists(config.edited_photos):
+                generated_folder = config.edited_photos
     else:
         print("Invalid input selection. Exiting pipeline script.")
         return
@@ -61,7 +62,7 @@ def run_fabric_pipeline():
         return
 
     # Dynamic File Versioning
-    output_pattern_file = get_next_file_name(base_name="final_pattern_tile", extension=".png")
+    output_pattern_file = get_next_file_name(base_name=config.generated_pattern, extension=".png")
     print(f"[main] Target output filename locked: {output_pattern_file}")
 
     # Step 2: Formulate pattern from our directory
@@ -69,7 +70,7 @@ def run_fabric_pipeline():
         input_folder=generated_folder, 
         output_path=output_pattern_file,
         sub_tile_size=2000, 
-        total_objs=50       
+        total_objs=config.number_objs    
     )
     
     # Step 3: View the final master pattern asset
